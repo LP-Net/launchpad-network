@@ -6,20 +6,410 @@
     <title>LaunchPad Network | Launch. Build. Grow.</title>
     <meta name="description" content="Launch skills. Build income. Grow steadily. Resources for independent operators.">
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css">
-    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- CSS STYLES -->
+    <style>
+        /* --- Core Variables & Reset --- */
+        :root {
+            --bg-color: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent-color: #4f7eff;
+            --accent-glow: rgba(79, 126, 255, 0.4);
+            /* Liquid Glass Effect Variables */
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-blur: 16px;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* --- 3D Background Canvas --- */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at center, #0a0a1a 0%, #000000 100%);
+        }
+
+        /* --- Layout --- */
+        main {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* --- Liquid Glass Panels --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                        box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        border-color 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .hero-content {
+            max-width: 700px; /* Slightly wider for new text */
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        .brand-name {
+            font-size: 3.5rem;
+            font-weight: 600;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: white; 
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(79, 126, 255, 0.2);
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--accent-color);
+            font-weight: 400;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+        }
+
+        .separator {
+            height: 1px;
+            width: 60px;
+            background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+            margin: 0 auto 25px auto;
+        }
+
+        .description {
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-size: 1rem;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: justify;
+            text-align-last: center; /* Centers the last line */
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 14px 35px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            text-decoration: none;
+            border: 1px solid var(--accent-color);
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            background: var(--accent-color);
+            box-shadow: 0 0 25px var(--accent-glow);
+            transform: translateY(-2px);
+        }
+
+        /* --- Registration Section --- */
+        .registration {
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            padding: 60px 0;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .form-container h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-align: center;
+            color: white;
+        }
+
+        .form-intro {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            margin-left: 4px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: white;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 2px rgba(79, 126, 255, 0.1);
+        }
+
+        /* Track Description Box */
+        #track-info-box {
+            margin-top: 10px;
+            padding: 12px 15px;
+            background: rgba(79, 126, 255, 0.08);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 0 8px 8px 0;
+            color: #dbeafe;
+            font-size: 0.85rem;
+            display: none; /* Hidden until selected */
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Custom Select Arrow */
+        .select-wrapper {
+            position: relative;
+        }
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        select {
+            appearance: none;
+            cursor: pointer;
+        }
+        select option {
+            background-color: #0a0a0a;
+            color: white;
+            padding: 10px;
+        }
+
+        /* Range Slider */
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            padding: 0;
+            border: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            margin-top: -7px;
+            box-shadow: 0 0 10px var(--accent-glow);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+
+        #profit-value {
+            font-weight: 600;
+            color: var(--accent-color);
+            min-width: 45px;
+            text-align: right;
+            font-size: 1.1rem;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 30px;
+            background: rgba(79, 126, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .checkbox-group input {
+            margin-top: 4px;
+            accent-color: var(--accent-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        .checkbox-group label {
+            font-size: 0.85rem;
+            color: #d0d0d0;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        /* Submit Button */
+        .submit-button {
+            width: 100%;
+            padding: 16px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-button:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0 20px 0;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.8rem;
+        }
+
+        /* Status Messages */
+        .status-message {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 1.5em;
+            font-weight: 500;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .brand-name { font-size: 2.5rem; }
+            .glass-panel { padding: 25px; }
+            .hero-content { width: 100%; }
+        }
+    </style>
 </head>
 <body>
 
     <!-- 3D Canvas Container -->
     <div id="canvas-container"></div>
 
-    <!-- Main Overlay Content -->
+    <!-- Main Content -->
     <main>
         <!-- Hero Section -->
         <section class="hero">
@@ -27,18 +417,17 @@
                 <h1 class="brand-name">LaunchPad Network</h1>
                 <p class="tagline">Launch skills. Build income. Grow steadily.</p>
                 <div class="separator"></div>
+                <!-- Updated Short Program Explanation -->
                 <p class="description">
-                    Access high-leverage resources and strategic guidance. 
-                    We provide the infrastructure; you provide the drive. 
-                    Operate independently within a structured ecosystem.
+                    LaunchPad Network is a curated program that helps motivated individuals turn practical skills into real-world projects. We provide a structured learning environment and starting support so participants can build and grow independently at their own pace. The program is selective and focused on long-term, skill-based value creation.
                 </p>
-                <!-- Button triggers JS to reveal #register -->
+                <!-- Button to reveal form -->
                 <button id="register-btn" class="cta-button">Initialize Registration</button>
             </div>
         </section>
 
         <!-- Registration Section (Hidden by default) -->
-        <section id="register" class="registration" style="display: none;">
+        <section id="register" class="registration">
             <div class="glass-panel form-container">
                 <h2>Operator Registration</h2>
                 <p class="form-intro">Configure your track and confirm terms.</p>
@@ -61,24 +450,26 @@
                         <input type="tel" id="whatsapp" name="whatsapp" required placeholder="+1 (555) 000-0000">
                     </div>
 
-                    <!-- Track Selection with Inline Descriptions -->
+                    <!-- Track Selection -->
                     <div class="input-group">
                         <label for="track">Select Track</label>
                         <div class="select-wrapper">
                             <select id="track" name="track" required>
                                 <option value="" disabled selected>Choose your pathway...</option>
-                                <option value="n8n Automation">n8n Automation (Designing automated workflows that connect apps and reduce manual work)</option>
-                                <option value="YouTube Content">YouTube Content (Creating and growing content channels through regular publishing)</option>
-                                <option value="Digital Product Sales">Digital Product Sales (Creating and selling downloadable or online products)</option>
+                                <option value="n8n Automation">n8n Automation</option>
+                                <option value="YouTube Content">YouTube Content Creation</option>
+                                <option value="Digital Product Sales">Digital Product Sales</option>
                             </select>
                         </div>
+                        <!-- Dynamic Track Explanation Box -->
+                        <div id="track-info-box"></div>
                     </div>
 
-                    <!-- Profit Share Slider (10-50) -->
+                    <!-- Profit Share Slider -->
                     <div class="input-group">
                         <label for="profit-share">Your Agreed Profit Share (%)</label>
                         <div class="range-container">
-                            <input type="range" id="profit-share" name="profit_share" min="10" max="50" step="1" value="10">
+                            <input type="range" id="profit-share" name="profit_share" min="10" max="60" step="1" value="10">
                             <span id="profit-value">10%</span>
                         </div>
                     </div>
@@ -113,7 +504,216 @@
         </footer>
     </main>
 
-    <!-- Script -->
-    <script type="module" src="script.js"></script>
+    <!-- JAVASCRIPT LOGIC -->
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+        /* --- 1. 3D Background Logic (Three.js) --- */
+        const initScene = () => {
+            const container = document.getElementById('canvas-container');
+            
+            // Scene & Fog
+            const scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x050505, 0.0025);
+
+            // Camera
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+
+            // Renderer
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // --- Geometries ---
+            
+            // A. Main Icosahedron
+            const geometry = new THREE.IcosahedronGeometry(12, 1);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x4f7eff, 
+                wireframe: true, 
+                transparent: true, 
+                opacity: 0.08
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+
+            // B. Particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 800;
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 90; 
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.12,
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.5,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            // --- Lighting ---
+            const ambientLight = new THREE.AmbientLight(0x404040, 2);
+            scene.add(ambientLight);
+            const pointLight = new THREE.PointLight(0x4f7eff, 2, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+
+            // --- Interactions ---
+            let mouseX = 0, mouseY = 0;
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX);
+                mouseY = (event.clientY - windowHalfY);
+            });
+
+            window.addEventListener('resize', () => {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+            });
+
+            // --- Animation Loop ---
+            const clock = new THREE.Clock();
+            const animate = () => {
+                requestAnimationFrame(animate);
+                const elapsedTime = clock.getElapsedTime();
+
+                // Rotation
+                sphere.rotation.y += 0.002;
+                sphere.rotation.x += 0.001;
+                particlesMesh.rotation.y = -elapsedTime * 0.05;
+
+                // Parallax
+                const targetX = mouseX * 0.001;
+                const targetY = mouseY * 0.001;
+                sphere.rotation.y += 0.05 * (targetX - sphere.rotation.y);
+                sphere.rotation.x += 0.05 * (targetY - sphere.rotation.x);
+                
+                // Floating
+                particlesMesh.position.y = Math.sin(elapsedTime * 0.5) * 0.5;
+
+                renderer.render(scene, camera);
+            };
+            animate();
+        };
+
+        /* --- 2. Form & UI Logic --- */
+        const initUI = () => {
+            // Slider Logic
+            const slider = document.getElementById('profit-share');
+            const output = document.getElementById('profit-value');
+            if(slider && output) {
+                slider.addEventListener('input', function() {
+                    output.innerHTML = this.value + "%";
+                });
+            }
+
+            // Button Scroll & Reveal
+            const btn = document.getElementById('register-btn');
+            const formSection = document.getElementById('register');
+            if(btn && formSection) {
+                btn.addEventListener('click', () => {
+                    formSection.style.display = 'flex';
+                    formSection.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            // Dynamic Track Explanation
+            const trackSelect = document.getElementById('track');
+            const trackInfoBox = document.getElementById('track-info-box');
+
+            const trackDescriptions = {
+                "n8n Automation": "Designing automated workflows that connect apps, reduce manual work, and solve operational problems.",
+                "YouTube Content": "Creating, publishing, and growing content channels around education, entertainment, or information.",
+                "Digital Product Sales": "Creating and selling downloadable or online products such as templates, guides, tools, or media."
+            };
+
+            if(trackSelect && trackInfoBox) {
+                trackSelect.addEventListener('change', function() {
+                    const selected = this.value;
+                    const desc = trackDescriptions[selected];
+                    
+                    if(desc) {
+                        trackInfoBox.style.display = "block";
+                        trackInfoBox.textContent = desc;
+                    } else {
+                        trackInfoBox.style.display = "none";
+                    }
+                });
+            }
+
+            // Formspree AJAX
+            const form = document.getElementById('launchForm');
+            const statusMsg = document.getElementById('form-status');
+
+            if(form) {
+                form.addEventListener('submit', async function(event) {
+                    event.preventDefault(); 
+                    const submitBtn = form.querySelector('.submit-button');
+                    const originalBtnText = submitBtn.innerText;
+                    
+                    submitBtn.innerText = "Transmitting...";
+                    submitBtn.disabled = true;
+                    statusMsg.innerText = "";
+                    statusMsg.className = "status-message";
+
+                    const data = new FormData(event.target);
+
+                    try {
+                        const response = await fetch(event.target.action, {
+                            method: form.method,
+                            body: data,
+                            headers: { 'Accept': 'application/json' }
+                        });
+
+                        if (response.ok) {
+                            statusMsg.innerText = "Registration Confirmed. Protocol Initiated.";
+                            statusMsg.classList.add("success");
+                            form.reset();
+                            if(output) output.innerHTML = "10%";
+                            trackInfoBox.style.display = "none"; // Hide info box
+                            submitBtn.innerText = "Sent";
+                        } else {
+                            const errorData = await response.json();
+                            if (Object.hasOwn(errorData, 'errors')) {
+                                statusMsg.innerText = errorData["errors"].map(e => e["message"]).join(", ");
+                            } else {
+                                statusMsg.innerText = "Transmission failed. Verify network.";
+                            }
+                            statusMsg.classList.add("error");
+                            submitBtn.innerText = originalBtnText;
+                            submitBtn.disabled = false;
+                        }
+                    } catch (error) {
+                        statusMsg.innerText = "Connection Error. Please retry.";
+                        statusMsg.classList.add("error");
+                        submitBtn.innerText = originalBtnText;
+                        submitBtn.disabled = false;
+                    }
+                });
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initScene();
+            initUI();
+        });
+    </script>
+    <script>
+        // Fallback for particles if module fails (rare but safe)
+    </script>
 </body>
 </html>
